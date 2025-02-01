@@ -3,18 +3,30 @@ const path = require("path");
 
 let mainWindow;
 
-app.whenReady().then(() => {
+function createWindow() {
     mainWindow = new BrowserWindow({
-        width: 1000,
-        height: 800,
+        width: 1280,
+        height: 720,
         webPreferences: {
-            nodeIntegration: true, // Erlaubt Zugriff auf Node.js im Renderer-Prozess
+            nodeIntegration: true,
+            contextIsolation: false,
         },
     });
 
-    mainWindow.loadURL("http://localhost:3000"); // Lädt das React-Frontend
-});
+    mainWindow.loadFile(path.join(__dirname, "frontend/my-app/build/index.html"));
+    mainWindow.webContents.openDevTools(); // Optional
+}
+
+app.whenReady().then(createWindow);
 
 app.on("window-all-closed", () => {
-    if (process.platform !== "darwin") app.quit();
+    if (process.platform !== "darwin") {
+        app.quit();
+    }
+});
+
+app.on("activate", () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+        createWindow();
+    }
 });
